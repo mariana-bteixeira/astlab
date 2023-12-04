@@ -1,0 +1,33 @@
+name: Checkmarx AST Scan
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkmarx AST Github Action
+        # You may pin to the exact commit or the version.
+        # uses: Checkmarx/ast-github-action@72d549beebd0bc5bbafa559f198161b6ce7c03df
+       uses: Checkmarx/ast-github-action@2.0.21
+       with:
+         # Provide the AST portal URL
+         base_uri: https://eu.ast.checkmarx.net
+         # Provide the Tenant for AST portal URL
+         cx_tenant: cx_ps_mariana_teixeira
+         # Client ID for AST portal authentication
+         cx_client_id: ${{ secrets.CLIENT_ID }}
+         # Secret key for AST portal authentication
+         cx_client_secret: ${{ secrets.CLIENT_SECRET }}
+         # Select a Checkmarx Project Name
+         project_name: mariana-bteixeira/astlab
+         # Branch name
+         branch: master
+         # GitHub API Token
+         github_token: # optional, default is ${{ github.token }}
+         # Additional parameters for AST scan
+         additional_params: --file-filter !readme --report-format sarif --output-name results
+     - name: Upload SARIF file
+        uses: github/codeql-action/upload
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: results.sarif
